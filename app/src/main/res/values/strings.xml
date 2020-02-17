@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CryptoCurrencyApp</string>
+    <string name="database_primary_key">com.stutern.cryptocurrencyapp.DATABASE_PRIMARY_KEY</string>
 </resources>

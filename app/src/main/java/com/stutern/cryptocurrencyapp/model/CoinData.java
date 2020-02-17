@@ -1,4 +1,4 @@
-package com.stutern.cryptocurrencyapp;
+package com.stutern.cryptocurrencyapp.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -14,6 +14,19 @@ import com.google.gson.annotations.SerializedName;
 public class CoinData implements Parcelable {
 
     public static  String TAG = CoinData.class.getSimpleName();
+
+
+    public CoinData(String name, String symbol, String priceUsd, String _24hVolumeUsd, String marketCapUsd, String availableSupply, String totalSupply, String percentChange1h, String percentChange24h) {
+        this.name = name;
+        this.symbol = symbol;
+        this.priceUsd = priceUsd;
+        this._24hVolumeUsd = _24hVolumeUsd;
+        this.marketCapUsd = marketCapUsd;
+        this.availableSupply = availableSupply;
+        this.totalSupply = totalSupply;
+        this.percentChange1h = percentChange1h;
+        this.percentChange24h = percentChange24h;
+    }
 
     public static Parcelable.Creator<CoinData> CREATOR = new Parcelable.Creator<CoinData>() {
         @Override

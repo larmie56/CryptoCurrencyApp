@@ -5,7 +5,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 
-import com.stutern.cryptocurrencyapp.CoinData;
 import com.stutern.cryptocurrencyapp.IMainActivity;
 import com.stutern.cryptocurrencyapp.R;
 

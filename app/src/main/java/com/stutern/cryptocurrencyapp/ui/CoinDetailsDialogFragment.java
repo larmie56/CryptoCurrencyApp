@@ -9,10 +9,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
 
-import com.stutern.cryptocurrencyapp.CoinData;
+import com.stutern.cryptocurrencyapp.model.CoinData;
 //import com.stutern.cryptocurrencyapp.IDialogFragment;
 import com.stutern.cryptocurrencyapp.R;
 import com.stutern.cryptocurrencyapp.databinding.DialogFragmentCoinDetailsBinding;
@@ -35,8 +34,7 @@ public class CoinDetailsDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         //mBinding = DataBindingUtil.inflate(inflater, R.layout.dialog_fragment_coin_details, container, false);
-        View view = inflater.inflate(R.layout.dialog_fragment_coin_details, container, false);
-        return view;
+        return inflater.inflate(R.layout.dialog_fragment_coin_details, container, false);
     }
 
     @Override

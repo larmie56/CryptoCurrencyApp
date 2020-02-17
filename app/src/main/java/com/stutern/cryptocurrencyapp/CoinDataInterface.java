@@ -1,5 +1,7 @@
 package com.stutern.cryptocurrencyapp;
 
+import com.stutern.cryptocurrencyapp.model.CoinData;
+
 import java.util.List;
 
 import io.reactivex.Single;
