@@ -1,30 +1,32 @@
 package com.stutern.cryptocurrencyapp.ui;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.paging.PagedList;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.stutern.cryptocurrencyapp.CryptoCurrencyRoomDb.CoinDataEntity;
 import com.stutern.cryptocurrencyapp.CryptoCurrencyRoomDb.CryptoCurrencyDatabase;
-import com.stutern.cryptocurrencyapp.mapper.ObjectMapper;
-import com.stutern.cryptocurrencyapp.model.CoinData;
 import com.stutern.cryptocurrencyapp.CoinDataInterface;
+import com.stutern.cryptocurrencyapp.CryptoCurrencyViewModel;
 import com.stutern.cryptocurrencyapp.R;
-import com.stutern.cryptocurrencyapp.adapter.CryptoCurrencyAdapter;
+import com.stutern.cryptocurrencyapp.PagingLib.CryptoCurrencyAdapter;
 
 import java.util.List;
 
@@ -44,7 +46,11 @@ public class MainFragment extends Fragment {
     private Disposable mDisposable;
     private RecyclerView mRecyclerView;
     private ProgressBar mProgressBar;
-    private CryptoCurrencyDatabase mCryptoCurrencyDatabase;
+    private ViewModel mViewModel;
+    private LiveData<PagedList<CoinDataEntity>> mLivePagedList;
+    private CryptoCurrencyAdapter mAdapter;
+    private SwipeRefreshLayout mSwipeRefresh;
+
 
     @Nullable
     @Override
@@ -60,26 +66,23 @@ public class MainFragment extends Fragment {
         makeNetworkRequest();
     }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        mCryptoCurrencyDatabase = CryptoCurrencyDatabase.getDatabase(context.getApplicationContext());
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        if (mCryptoCurrencyDatabase.isOpen())
-            mCryptoCurrencyDatabase.close();
-    }
-
     private void init(View view) {
+        mViewModel = ViewModelProviders.of(getActivity()).get(CryptoCurrencyViewModel.class);
+        mLivePagedList = new MutableLiveData<>();
         mRecyclerView = view.findViewById(R.id.recyclerView);
-        CryptoCurrencyAdapter adapter = new CryptoCurrencyAdapter(getActivity().getLayoutInflater());
+        mAdapter = new CryptoCurrencyAdapter(getActivity().getLayoutInflater());
+        mSwipeRefresh = view.findViewById(R.id.swipe_refresh);
+        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                makeNetworkRequest();
+                mSwipeRefresh.setRefreshing(false);
+            }
+        });
         LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext());
 
         mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.setAdapter(mAdapter);
         //mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
 
         mProgressBar = view.findViewById(R.id.progress_circular);
@@ -107,35 +110,38 @@ public class MainFragment extends Fragment {
         mDisposable = coinDataInterface.getCoinData("50")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<List<CoinData>>() {
+                .subscribe(new Consumer<List<CoinDataEntity>>() {
                     @Override
-                    public void accept(List<CoinData> coinData) throws Exception {
+                    public void accept(List<CoinDataEntity> coinData) throws Exception {
                         writeToDatabase(coinData);
-                        if (mRecyclerView.getAdapter() != null) {
-                            ((CryptoCurrencyAdapter) mRecyclerView.getAdapter()).setCoinDataList(coinData);
-                            mProgressBar.setVisibility(View.GONE);
+                        ((CryptoCurrencyViewModel) mViewModel).getLivePagedList().observe(getActivity(), new Observer<PagedList<CoinDataEntity>>() {
+                            @Override
+                            public void onChanged(PagedList<CoinDataEntity> coinDataEntities) {
+                                if (mAdapter != null)
+                                    mProgressBar.setVisibility(View.GONE);
+                                    mAdapter.submitList(coinDataEntities);
+                            }
+                        });
                         }
 
-                    }
-
-                    private void writeToDatabase(final List<CoinData> coinData) {
+                    private void writeToDatabase(final List<CoinDataEntity> coinDataEntities) {
                         Thread writeToDatabaseThread = new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                ObjectMapper mapper = new ObjectMapper();
-                                List<CoinDataEntity> coinDataEntities = mapper.modelToEntity(coinData, getActivity());
                                 //Opening app in rapid succession causes crash --fix it!
-                                if (mCryptoCurrencyDatabase.getCryptoCurrencyDao().getCryptoCurrencies().size() != 0) {
-                                    int updated = mCryptoCurrencyDatabase.getCryptoCurrencyDao()
-                                            .updateCryptoEntities(coinDataEntities);
+                                if (coinDataEntities.size() != 0) {
+
+                                    int updated = CryptoCurrencyDatabase.getDatabase(getActivity().getApplicationContext())
+                                    .getCryptoCurrencyDao().updateCryptoEntities(coinDataEntities);
                                     if (updated != 50) {
                                         Log.e(CryptoCurrencyDatabase.class.getSimpleName(), "The database operation returned " +
-                                                "without updating all the coinData");
+                                                "without updating all the coinDataEntities");
                                     }
 
                                 }
                                 else {
-                                    mCryptoCurrencyDatabase.getCryptoCurrencyDao().insertCryptoCurrencies(coinDataEntities);
+                                    CryptoCurrencyDatabase.getDatabase(getActivity().getApplicationContext())
+                                            .getCryptoCurrencyDao().insertCryptoCurrencies(coinDataEntities);
                                 }
                             }
                         });
@@ -145,41 +151,31 @@ public class MainFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        if (mCryptoCurrencyDatabase != null) {
-                            readFromDatabase();
-                        }
-                        //Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_LONG).show();
-                        mProgressBar.setVisibility(View.GONE);
-                        Snackbar.make(mRecyclerView, throwable.getMessage(), Snackbar.LENGTH_INDEFINITE).show();
-                    }
-
-                    private void readFromDatabase() {
-                        Thread thread = new Thread(new Runnable() {
+                        ((CryptoCurrencyViewModel) mViewModel).getLivePagedList().observe(getActivity(), new Observer<PagedList<CoinDataEntity>>() {
                             @Override
-                            public void run() {
-                                List<CoinDataEntity> coinDataEntities = mCryptoCurrencyDatabase.getCryptoCurrencyDao()
-                                        .getCryptoCurrencies();
-                                if (coinDataEntities.size() != 0) {
-                                    ObjectMapper mapper = new ObjectMapper();
-                                    final List<CoinData> coinDataList = mapper.entityToModel(coinDataEntities);
-                                    Handler handler = new Handler(Looper.getMainLooper());
-                                    handler.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            ((CryptoCurrencyAdapter) mRecyclerView.getAdapter()).setCoinDataList(coinDataList);
-                                        }
-                                    });
-                                }
+                            public void onChanged(PagedList<CoinDataEntity> coinDataEntities) {
+                                if (mAdapter != null)
+                                    mAdapter.submitList(coinDataEntities);
                             }
                         });
-                        thread.start();
+                        mProgressBar.setVisibility(View.GONE);
+                        Snackbar sb = Snackbar.make(mRecyclerView, "Failed to load data", Snackbar.LENGTH_INDEFINITE)
+                                .setAction("RETRY", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        makeNetworkRequest();
+                                    }
+                                });
+                        sb.show();
                     }
                 });
     }
 
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mDisposable.dispose();
+        if (!(mDisposable == null && mDisposable.isDisposed()))
+            mDisposable.dispose();
     }
 }

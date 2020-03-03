@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -6,6 +6,15 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="snackbar_style" parent="@style/Widget.MaterialComponents.Snackbar" tools:override="true">
+        <item name="android:layout_height">24dp</item>
+    </style>
+
+    <style name="TextAppearance.Design.Snackbar.Action" parent="android:TextAppearance" tools:override="true">
+        <item name="android:textSize">50sp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
 </resources>

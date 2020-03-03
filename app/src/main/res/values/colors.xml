@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
 
     <color name="colorArrowUp">#00ff00</color>
     <color name="colorArrowDown">#ff0000</color>
+    <color name="white">#fff</color>
+    <color name="snackBraColor">#81d8d0</color>
+
+    <color name="design_snackbar_background_color" tools:override="true">@color/snackBraColor</color>
+
 </resources>

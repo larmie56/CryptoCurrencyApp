@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.stutern.cryptocurrencyapp.CryptoCurrencyRoomDb.CoinDataEntity;
 import com.stutern.cryptocurrencyapp.model.CoinData;
 //import com.stutern.cryptocurrencyapp.IDialogFragment;
 import com.stutern.cryptocurrencyapp.R;
@@ -52,11 +53,11 @@ public class CoinDetailsDialogFragment extends DialogFragment {
         mTextViewPercentageChange24h = view.findViewById(R.id.textView_percentageChange24h_dialog);
         mImageViewArrow = view.findViewById(R.id.imageView_arrow_dialog);
 
-        CoinData coinData = getArguments().getParcelable(CoinData.TAG);
+        CoinDataEntity coinData = getArguments().getParcelable(CoinDataEntity.TAG);
         bindData(coinData);
     }
 
-    private void bindData(CoinData coinData) {
+    private void bindData(CoinDataEntity coinData) {
         DisplayUtil.displayTextDrawable(mImageViewSymbol, coinData.getSymbol());
         mTextViewName.setText(StringUtil.nameAndSymbol(coinData.getName(), coinData.getSymbol()));
         mTextViewPrice.setText(coinData.getPriceUsd());

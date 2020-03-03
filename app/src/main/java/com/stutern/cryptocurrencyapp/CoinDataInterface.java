@@ -1,6 +1,6 @@
 package com.stutern.cryptocurrencyapp;
 
-import com.stutern.cryptocurrencyapp.model.CoinData;
+import com.stutern.cryptocurrencyapp.CryptoCurrencyRoomDb.CoinDataEntity;
 
 import java.util.List;
 
@@ -11,5 +11,5 @@ import retrofit2.http.Query;
 public interface CoinDataInterface {
 
     @GET("ticker/")
-    Single<List<CoinData>> getCoinData(@Query("limit") String limit);
+    Single<List<CoinDataEntity>> getCoinData(@Query("limit") String limit);
 }

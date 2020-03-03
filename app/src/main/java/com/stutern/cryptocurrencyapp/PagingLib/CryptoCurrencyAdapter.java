@@ -1,4 +1,4 @@
-package com.stutern.cryptocurrencyapp.adapter;
+package com.stutern.cryptocurrencyapp.PagingLib;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,70 +8,47 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.stutern.cryptocurrencyapp.model.CoinData;
+import com.stutern.cryptocurrencyapp.CryptoCurrencyRoomDb.CoinDataEntity;
 import com.stutern.cryptocurrencyapp.IMainActivity;
 import com.stutern.cryptocurrencyapp.R;
 import com.stutern.cryptocurrencyapp.ui.CoinDetailsDialogFragment;
 import com.stutern.cryptocurrencyapp.utilities.DisplayUtil;
 import com.stutern.cryptocurrencyapp.utilities.StringUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class CryptoCurrencyAdapter extends RecyclerView.Adapter<CryptoCurrencyAdapter.ViewHolder> {
-    private static int VIEW_TYPE_ITEM = 0;
-    private static int VIEW_TYPE_DIVIDER = 1;
+public class CryptoCurrencyAdapter extends PagedListAdapter<CoinDataEntity, CryptoCurrencyAdapter.ViewHolder> {
     private LayoutInflater mInflater;
-    private List<CoinData> mCoinDataList;
     private CoinDetailsDialogFragment mCoinDetailsDialogFragment = new CoinDetailsDialogFragment();
 
     public CryptoCurrencyAdapter(LayoutInflater inflater) {
+        super(CoinDataEntity.DIFF_UTIL);
         mInflater = inflater;
-        mCoinDataList = new ArrayList<>();
     }
+
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(viewType == VIEW_TYPE_ITEM ? R.layout.recycler_item :
-                R.layout.recycler_view_divider, parent, false);
-        return new ViewHolder(view, viewType);
+        View view = mInflater.inflate(R.layout.recycler_item, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
-        final CoinData coinData = mCoinDataList.get(position/2);
+        final CoinDataEntity coinData = getItem(position);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
-                bundle.putParcelable(CoinData.TAG, coinData);
+                bundle.putParcelable(CoinDataEntity.TAG, coinData);
                 mCoinDetailsDialogFragment.setArguments(bundle);
                 ((IMainActivity) holder.itemView.getContext()).onItemClick(mCoinDetailsDialogFragment);
             }
         });
         holder.bind(coinData);
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        if (position % 2 == 0)
-            return VIEW_TYPE_ITEM;
-        return VIEW_TYPE_DIVIDER;
-    }
-
-    @Override
-    public int getItemCount() {
-        return mCoinDataList == null ? 0 : mCoinDataList.size()*2;
-    }
-
-    public void setCoinDataList(List<CoinData> coinDataList) {
-        mCoinDataList.clear();
-        mCoinDataList.addAll(coinDataList);
-        notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -80,29 +57,23 @@ public class CryptoCurrencyAdapter extends RecyclerView.Adapter<CryptoCurrencyAd
         private TextView textViewPrice;
         private TextView textViewMarketCap;
         private ImageView imageViewArrow;
-        private int mViewType;
 
-         ViewHolder(@NonNull final View itemView, int viewType) {
+         ViewHolder(@NonNull final View itemView) {
             super(itemView);
-             mViewType = viewType;
-             if (mViewType == VIEW_TYPE_ITEM) {
                  imageViewSymbol = itemView.findViewById(R.id.imageView_symbol);
                  textViewName = itemView.findViewById(R.id.textView_name);
                  textViewPrice = itemView.findViewById(R.id.textView_price);
                  textViewMarketCap = itemView.findViewById(R.id.textView_marketCap);
                  imageViewArrow = itemView.findViewById(R.id.imageView_arrow);
-             }
         }
 
-        void bind(CoinData coinData) {
-             if (mViewType == VIEW_TYPE_ITEM) {
-                 textViewName.setText(StringUtil.nameAndSymbol(coinData.getName(), coinData.getSymbol()));
-                 textViewPrice.setText(StringUtil.appendDollarToPrice(coinData.getPriceUsd()));
-                 textViewMarketCap.setText(coinData.getMarketCapUsd());
+        void bind(CoinDataEntity coinDataEntity) {
+                 textViewName.setText(StringUtil.nameAndSymbol(coinDataEntity.getName(), coinDataEntity.getSymbol()));
+                 textViewPrice.setText(StringUtil.appendDollarToPrice(coinDataEntity.getPriceUsd()));
+                 textViewMarketCap.setText(coinDataEntity.getMarketCapUsd());
 
-                 DisplayUtil.displayTextDrawable(imageViewSymbol, coinData.getSymbol());
-                 DisplayUtil.displayArrow(imageViewArrow, coinData.getPercentChange1h());
-             }
+                 DisplayUtil.displayTextDrawable(imageViewSymbol, coinDataEntity.getSymbol());
+                 DisplayUtil.displayArrow(imageViewArrow, coinDataEntity.getPercentChange1h());
         }
     }
 }
