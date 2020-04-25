@@ -1,32 +1,25 @@
 package com.stutern.cryptocurrencyapp.mapper;
 
-import android.content.Context;
-
 import com.stutern.cryptocurrencyapp.CryptoCurrencyRoomDb.CoinDataEntity;
 import com.stutern.cryptocurrencyapp.model.CoinData;
-import com.stutern.cryptocurrencyapp.utilities.PrimaryKeyGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ObjectMapper {
 
-    public List<CoinDataEntity> modelToEntity(List<CoinData> coinDataList, Context context) {
+    public static List<CoinDataEntity> modelToEntity(CoinData coinData) {
         List<CoinDataEntity> coinDataEntities = new ArrayList<>();
-        PrimaryKeyGenerator primaryKeyGenerator = new PrimaryKeyGenerator();
 
-        for (CoinData coindata : coinDataList) {
-            int primaryKey = primaryKeyGenerator.getPrimaryKey(context);
-            coinDataEntities.add(new CoinDataEntity(coindata.getSymbol(), coindata.getName(),
-                    coindata.getPriceUsd(), coindata.get24hVolumeUsd(), coindata.getMarketCapUsd(),
-                    coindata.getAvailableSupply(), coindata.getTotalSupply(),
-                    coindata.getPercentChange1h(), coindata.getPercentChange24h()));
-        }
+            List<CoinData.Data> dataList = coinData.getDataSet();
+
+            for (CoinData.Data data : dataList)
+            coinDataEntities.add(new CoinDataEntity(data));
 
         return coinDataEntities;
     }
 
-    public List<CoinData> entityToModel(List<CoinDataEntity> coinDataEntities) {
+  /*  public List<CoinData> entityToModel(List<CoinDataEntity> coinDataEntities) {
         List<CoinData> coinDataList = new ArrayList<>();
 
         for (CoinDataEntity coinDataEntity : coinDataEntities) {
@@ -36,5 +29,5 @@ public class ObjectMapper {
             }
 
         return coinDataList;
-    }
+    }*/
 }

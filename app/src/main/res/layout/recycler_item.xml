@@ -59,7 +59,7 @@
         android:layout_height="0.1dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="@+id/constraintLayout"
-        android:layout_marginStart="85dp"
+        android:layout_marginStart="95dp"
         android:background="#aaaaaa"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

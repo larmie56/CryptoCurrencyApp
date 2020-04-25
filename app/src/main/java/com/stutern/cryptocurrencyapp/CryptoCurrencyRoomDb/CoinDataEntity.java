@@ -19,6 +19,36 @@ public class CoinDataEntity implements Parcelable {
 
     public static  String TAG = CoinDataEntity.class.getSimpleName();
 
+    @PrimaryKey
+    @NonNull
+    @ColumnInfo(name = "_symbol")
+    public String _symbol;
+
+    @ColumnInfo(name = "_name")
+    public String name;
+
+    @ColumnInfo(name = "_priceUsd")
+    public String priceUsd;
+
+    @ColumnInfo(name = "_24hVolumeUsd")
+    public String _24hVolumeUsd;
+
+    @ColumnInfo(name = "_marketCapUsd")
+    public String marketCapUsd;
+
+    @ColumnInfo(name = "_totalSupply")
+    public String totalSupply;
+
+    @ColumnInfo(name = "_availableSupply")
+    @Nullable
+    public String availableSupply;
+
+    @ColumnInfo(name = "_percentChange1h")
+    public String percentChange1h;
+
+    @ColumnInfo(name = "_percentChange24h")
+    public String percentChange24h;
+
     public static Parcelable.Creator<CoinDataEntity> CREATOR = new Parcelable.Creator<CoinDataEntity>() {
         @Override
         public CoinDataEntity createFromParcel(Parcel parcel) {
@@ -37,11 +67,23 @@ public class CoinDataEntity implements Parcelable {
         this.priceUsd = parcel.readString();
         this._24hVolumeUsd = parcel.readString();
         this.marketCapUsd = parcel.readString();
-        this.availableSupply = parcel.readString();
         this.totalSupply = parcel.readString();
         this.percentChange1h = parcel.readString();
         this.percentChange24h = parcel.readString();
     }
+
+    public CoinDataEntity(CoinData.Data data) {
+        this._symbol = data.getSymbol();
+        this.name = data.getName();
+        this.priceUsd = data.getQuote().getUsd().getPriceUsd();
+        this._24hVolumeUsd = data.getQuote().getUsd().get24hVolumeUsd();
+        this.marketCapUsd = data.getQuote().getUsd().getMarketCapUsd();
+        this.totalSupply = data.getTotalSupply();
+        this.percentChange1h = data.getQuote().getUsd().getPercentChange1h();
+        this.percentChange24h = data.getQuote().getUsd().getPercentChange24h();
+    }
+
+    public CoinDataEntity() {}
 
     @Override
     public int describeContents() {
@@ -55,61 +97,9 @@ public class CoinDataEntity implements Parcelable {
         parcel.writeString(this.priceUsd);
         parcel.writeString(this._24hVolumeUsd);
         parcel.writeString(this.marketCapUsd);
-        parcel.writeString(this.availableSupply);
         parcel.writeString(this.totalSupply);
         parcel.writeString(this.percentChange1h);
         parcel.writeString(this.percentChange24h);
-    }
-
-    @PrimaryKey
-    @NonNull
-    @SerializedName("symbol")
-    @ColumnInfo(name = "_symbol")
-    public String _symbol;
-
-    @SerializedName("name")
-    @ColumnInfo(name = "_name")
-    public String name;
-
-    @SerializedName("price_usd")
-    @ColumnInfo(name = "_priceUsd")
-    public String priceUsd;
-
-    @SerializedName("24h_volume_usd")
-    @ColumnInfo(name = "_24hVolumeUsd")
-    public String _24hVolumeUsd;
-
-    @SerializedName("market_cap_usd")
-    @ColumnInfo(name = "_marketCapUsd")
-    public String marketCapUsd;
-
-    @SerializedName("available_supply")
-    @ColumnInfo(name = "_availableSupply")
-    public String availableSupply;
-
-    @SerializedName("total_supply")
-    @ColumnInfo(name = "_totalSupply")
-    public String totalSupply;
-
-    @SerializedName("percent_change_1h")
-    @ColumnInfo(name = "_percentChange1h")
-    public String percentChange1h;
-
-    @SerializedName("percent_change_24h")
-    @ColumnInfo(name = "_percentChange24h")
-    public String percentChange24h;
-
-    public CoinDataEntity(/*int primaryKey, */String _symbol, String name, String priceUsd, String _24hVolumeUsd, String marketCapUsd,
-                          String availableSupply, String totalSupply, String percentChange1h, String percentChange24h) {
-        this._symbol = _symbol;
-        this.name = name;
-        this.priceUsd = priceUsd;
-        this._24hVolumeUsd = _24hVolumeUsd;
-        this.marketCapUsd = marketCapUsd;
-        this.availableSupply = availableSupply;
-        this.totalSupply = totalSupply;
-        this.percentChange1h = percentChange1h;
-        this.percentChange24h = percentChange24h;
     }
 
     @JsonProperty("name")
@@ -135,11 +125,6 @@ public class CoinDataEntity implements Parcelable {
     @JsonProperty("market_cap_usd")
     public String getMarketCapUsd() {
         return marketCapUsd;
-    }
-
-    @JsonProperty("available_supply")
-    public String getAvailableSupply() {
-        return availableSupply;
     }
 
     @JsonProperty("total_supply")

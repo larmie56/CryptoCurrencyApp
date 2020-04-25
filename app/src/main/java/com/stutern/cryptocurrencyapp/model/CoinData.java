@@ -1,116 +1,46 @@
 package com.stutern.cryptocurrencyapp.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import java.util.HashMap;
-import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 
-public class CoinData implements Parcelable {
+public class CoinData {
 
     public static  String TAG = CoinData.class.getSimpleName();
 
+    @SerializedName("data")
+    private List<Data> dataSet;
 
-    public CoinData(String name, String symbol, String priceUsd, String _24hVolumeUsd, String marketCapUsd, String availableSupply, String totalSupply, String percentChange1h, String percentChange24h) {
-        this.name = name;
-        this.symbol = symbol;
-        this.priceUsd = priceUsd;
-        this._24hVolumeUsd = _24hVolumeUsd;
-        this.marketCapUsd = marketCapUsd;
-        this.availableSupply = availableSupply;
-        this.totalSupply = totalSupply;
-        this.percentChange1h = percentChange1h;
-        this.percentChange24h = percentChange24h;
+    public List<Data> getDataSet() {
+        return dataSet;
     }
 
-    public static Parcelable.Creator<CoinData> CREATOR = new Parcelable.Creator<CoinData>() {
-        @Override
-        public CoinData createFromParcel(Parcel parcel) {
-            return new CoinData(parcel);
-        }
-
-        @Override
-        public CoinData[] newArray(int i) {
-            return new CoinData[0];
-        }
-    };
-
-    public CoinData(Parcel parcel) {
-        this.id = parcel.readString();
-        this.name = parcel.readString();
-        this.symbol = parcel.readString();
-        this.rank = parcel.readString();
-        this.priceUsd = parcel.readString();
-        this.priceBtc = parcel.readString();
-        this._24hVolumeUsd = parcel.readString();
-        this.marketCapUsd = parcel.readString();
-        this.availableSupply = parcel.readString();
-        this.totalSupply = parcel.readString();
-        this.percentChange1h = parcel.readString();
-        this.percentChange24h = parcel.readString();
-        this.percentChange7d = parcel.readString();
-        this.lastUpdated = parcel.readString();
+    public void setDataSet(List<Data> dataSet) {
+        this.dataSet = dataSet;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+    public class Data {
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(this.id);
-        parcel.writeString(this.name);
-        parcel.writeString(this.symbol);
-        parcel.writeString(this.rank);
-        parcel.writeString(this.priceUsd);
-        parcel.writeString(this.priceBtc);
-        parcel.writeString(this._24hVolumeUsd);
-        parcel.writeString(this.marketCapUsd);
-        parcel.writeString(this.availableSupply);
-        parcel.writeString(this.totalSupply);
-        parcel.writeString(this.percentChange1h);
-        parcel.writeString(this.percentChange24h);
-        parcel.writeString(this.percentChange7d);
-        parcel.writeString(this.lastUpdated);
-    }
-
-
-        @SerializedName("id")
-        private String id;
+        @SerializedName("quote")
+        private Quote quote;
         @SerializedName("name")
         private String name;
+        @SerializedName("id")
+        private String id;
         @SerializedName("symbol")
         private String symbol;
-        @SerializedName("rank")
-        private String rank;
-        @SerializedName("price_usd")
-        private String priceUsd;
-        @SerializedName("price_btc")
-        private String priceBtc;
-        @SerializedName("24h_volume_usd")
-        private String _24hVolumeUsd;
-        @SerializedName("market_cap_usd")
-        private String marketCapUsd;
-        @SerializedName("available_supply")
-        private String availableSupply;
         @SerializedName("total_supply")
         private String totalSupply;
-        @SerializedName("percent_change_1h")
-        private String percentChange1h;
-        @SerializedName("percent_change_24h")
-        private String percentChange24h;
-        @SerializedName("percent_change_7d")
-        private String percentChange7d;
-        @SerializedName("last_updated")
-        private String lastUpdated;
-        @JsonIgnore
-        private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+        @JsonProperty("total_supply")
+        public String getTotalSupply() {
+            return totalSupply;
+        }
+
+        @JsonProperty("total_supply")
+        public void setTotalSupply(String totalSupply) {
+            this.totalSupply = totalSupply;
+        }
 
         @JsonProperty("id")
         public String getId() {
@@ -142,35 +72,41 @@ public class CoinData implements Parcelable {
             this.symbol = symbol;
         }
 
-        @JsonProperty("rank")
-        public String getRank() {
-            return rank;
+        public Quote getQuote() {
+            return quote;
         }
 
-        @JsonProperty("rank")
-        public void setRank(String rank) {
-            this.rank = rank;
+        public void setQuote(Quote quote) {
+            this.quote = quote;
+        }
+    }
+
+    public class Quote {
+        @SerializedName("USD")
+        USD usd;
+
+        public USD getUsd() {
+            return usd;
         }
 
-        @JsonProperty("price_usd")
-        public String getPriceUsd() {
-            return priceUsd;
+        public void setUsd(USD usd) {
+            this.usd = usd;
         }
+    }
 
-        @JsonProperty("price_usd")
-        public void setPriceUsd(String priceUsd) {
-            this.priceUsd = priceUsd;
-        }
-
-        @JsonProperty("price_btc")
-        public String getPriceBtc() {
-            return priceBtc;
-        }
-
-        @JsonProperty("price_btc")
-        public void setPriceBtc(String priceBtc) {
-            this.priceBtc = priceBtc;
-        }
+    public class USD {
+        @SerializedName("24h_volume_usd")
+        private String _24hVolumeUsd;
+        @SerializedName("market_cap_usd")
+        private String marketCapUsd;
+        @SerializedName("percent_change_1h")
+        private String percentChange1h;
+        @SerializedName("percent_change_24h")
+        private String percentChange24h;
+        @SerializedName("percent_change_7d")
+        private String percentChange7d;
+        @SerializedName("price")
+        private String priceUsd;
 
         @JsonProperty("24h_volume_usd")
         public String get24hVolumeUsd() {
@@ -190,26 +126,6 @@ public class CoinData implements Parcelable {
         @JsonProperty("market_cap_usd")
         public void setMarketCapUsd(String marketCapUsd) {
             this.marketCapUsd = marketCapUsd;
-        }
-
-        @JsonProperty("available_supply")
-        public String getAvailableSupply() {
-            return availableSupply;
-        }
-
-        @JsonProperty("available_supply")
-        public void setAvailableSupply(String availableSupply) {
-            this.availableSupply = availableSupply;
-        }
-
-        @JsonProperty("total_supply")
-        public String getTotalSupply() {
-            return totalSupply;
-        }
-
-        @JsonProperty("total_supply")
-        public void setTotalSupply(String totalSupply) {
-            this.totalSupply = totalSupply;
         }
 
         @JsonProperty("percent_change_1h")
@@ -242,24 +158,15 @@ public class CoinData implements Parcelable {
             this.percentChange7d = percentChange7d;
         }
 
-        @JsonProperty("last_updated")
-        public String getLastUpdated() {
-            return lastUpdated;
+        @JsonProperty("price_usd")
+        public String getPriceUsd() {
+            return priceUsd;
         }
 
-        @JsonProperty("last_updated")
-        public void setLastUpdated(String lastUpdated) {
-            this.lastUpdated = lastUpdated;
+        @JsonProperty("price_usd")
+        public void setPriceUsd(String priceUsd) {
+            this.priceUsd = priceUsd;
         }
-
-        @JsonAnyGetter
-        public Map<String, Object> getAdditionalProperties() {
-            return this.additionalProperties;
-        }
-
-        @JsonAnySetter
-        public void setAdditionalProperty(String name, Object value) {
-            this.additionalProperties.put(name, value);
-        }
+    }
 
 }

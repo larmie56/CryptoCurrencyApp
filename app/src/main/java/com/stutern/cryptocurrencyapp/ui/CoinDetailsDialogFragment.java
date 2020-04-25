@@ -63,7 +63,7 @@ public class CoinDetailsDialogFragment extends DialogFragment {
         mTextViewPrice.setText(coinData.getPriceUsd());
         mTextViewMarketCap.setText(coinData.getMarketCapUsd());
         mTextView24hVolume.setText(coinData.get24hVolumeUsd());
-        mTextViewAvailableSupply.setText(coinData.getAvailableSupply());
+        mTextViewAvailableSupply.setText("Nothing here bro");
         mTextViewTotalSupply.setText(coinData.getTotalSupply());
         mTextViewPercentageChange24h.setText(coinData.getPercentChange24h());
         DisplayUtil.displayArrow(mImageViewArrow, coinData.getPercentChange24h());

@@ -18,15 +18,17 @@ import com.stutern.cryptocurrencyapp.ui.CoinDetailsDialogFragment;
 import com.stutern.cryptocurrencyapp.utilities.DisplayUtil;
 import com.stutern.cryptocurrencyapp.utilities.StringUtil;
 
-public class CryptoCurrencyAdapter extends PagedListAdapter<CoinDataEntity, CryptoCurrencyAdapter.ViewHolder> {
+import java.util.List;
+
+public class CryptoCurrencyAdapter extends RecyclerView.Adapter<CryptoCurrencyAdapter.ViewHolder> {
     private LayoutInflater mInflater;
     private CoinDetailsDialogFragment mCoinDetailsDialogFragment = new CoinDetailsDialogFragment();
+    private List<CoinDataEntity> mCoinDataEntities;
 
-    public CryptoCurrencyAdapter(LayoutInflater inflater) {
-        super(CoinDataEntity.DIFF_UTIL);
+    public CryptoCurrencyAdapter(LayoutInflater inflater, List<CoinDataEntity> coinDataEntities) {
         mInflater = inflater;
+        mCoinDataEntities = coinDataEntities;
     }
-
 
     @NonNull
     @Override
@@ -37,7 +39,7 @@ public class CryptoCurrencyAdapter extends PagedListAdapter<CoinDataEntity, Cryp
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
-        final CoinDataEntity coinData = getItem(position);
+        final CoinDataEntity coinData = mCoinDataEntities.get(position);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,6 +51,15 @@ public class CryptoCurrencyAdapter extends PagedListAdapter<CoinDataEntity, Cryp
             }
         });
         holder.bind(coinData);
+    }
+
+    @Override
+    public int getItemCount() {
+        return mCoinDataEntities.size();
+    }
+
+    public void submitData(List<CoinDataEntity> coinDataEntities) {
+        mCoinDataEntities = coinDataEntities;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

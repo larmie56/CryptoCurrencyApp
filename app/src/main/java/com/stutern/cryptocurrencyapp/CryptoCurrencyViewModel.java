@@ -20,11 +20,11 @@ public class CryptoCurrencyViewModel extends AndroidViewModel {
 
     public CryptoCurrencyViewModel(@NonNull Application application) {
         super(application);
-        mDao = CryptoCurrencyDatabase.getDatabase(this.getApplication()).getCryptoCurrencyDao();
+        //mDao = CryptoCurrencyDatabase.getDatabase(this.getApplication()).getCryptoCurrencyDao();
 
         PagedList.Config config = new PagedList.Config.Builder().setPageSize(25).setEnablePlaceholders(false).build();
 
-        mLivePagedList = new LivePagedListBuilder<>(mDao.getCryptoCurrencies(), config).build();
+        //mLivePagedList = new LivePagedListBuilder<>(mDao.getCryptoCurrencies(), config).build();
     }
 
 
