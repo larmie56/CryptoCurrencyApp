@@ -8,7 +8,6 @@ import com.stutern.cryptocurrencyapp.model.CoinData;
 
 import java.util.List;
 
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;

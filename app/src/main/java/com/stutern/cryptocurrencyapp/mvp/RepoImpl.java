@@ -6,8 +6,6 @@ import com.stutern.cryptocurrencyapp.CryptoCurrencyRoomDb.CryptoCurrencyDao;
 import com.stutern.cryptocurrencyapp.model.CoinData;
 
 import java.util.List;
-
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 
  class RepoImpl implements LocalDataSource, RemoteDataSource {
